@@ -71,14 +71,14 @@ public class AddNewTask extends BottomSheetDialogFragment {
         newTaskText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (s.toString().equals("")) {
+                if (s.toString().trim().isEmpty()) {
                     newTaskSaveButton.setEnabled(false);
                     newTaskSaveButton.setTextColor(Color.GRAY);
+                    newTaskSaveButton.setTypeface(null, Typeface.NORMAL); // Remove bold
                 } else {
                     newTaskSaveButton.setEnabled(true);
                     newTaskSaveButton.setTextColor(ContextCompat.getColor(getContext(), R.color.purple_main));
@@ -88,27 +88,29 @@ public class AddNewTask extends BottomSheetDialogFragment {
 
             @Override
             public void afterTextChanged(Editable s) {
-
             }
         });
+
 
         boolean finalIsUpdate = isUpdate;
         newTaskSaveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String text = newTaskText.getText().toString();
-                if (finalIsUpdate) {
-                    db.updateTask(bundle.getInt("id"), text);
-
-                } else {
-                    ToDoModel task = new ToDoModel();
-                    task.setTask(text);
-                    task.setStatus(0);
-                    db.insertTask(task);
+                String text = newTaskText.getText().toString().trim(); // Trim to remove leading/trailing spaces
+                if (!text.isEmpty()) {
+                    if (finalIsUpdate) {
+                        db.updateTask(bundle.getInt("id"), text);
+                    } else {
+                        ToDoModel task = new ToDoModel();
+                        task.setTask(text);
+                        task.setStatus(0);
+                        db.insertTask(task);
+                    }
                 }
                 dismiss();
             }
         });
+
 
 
     }
